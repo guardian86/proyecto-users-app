@@ -27,7 +27,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ingeniero de software" />
+            android:text="Soy Andres ing de sistemas curso la maestría" />
 
         <ImageView
             android:layout_width="match_parent"
@@ -37,7 +37,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ingeniero de software" />
+            android:text="Soy Angie ing de electrónica curso la maestría" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
