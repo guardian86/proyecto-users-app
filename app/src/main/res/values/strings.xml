@@ -5,7 +5,7 @@
     <string name="title_notifications">Notifications</string>
 
     <string-array name="lista">
-        <item>male</item>
-        <item>feminine</item>
+        <item>Male</item>
+        <item>Feminine</item>
     </string-array>
 </resources>

@@ -1,6 +1,8 @@
 package com.example.retouser.model;
 
-public class Persona {
+import java.io.Serializable;
+
+public class Persona implements Serializable {
 
 
     public String getUid() {

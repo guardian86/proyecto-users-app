@@ -1,6 +1,9 @@
 package com.example.retouser.ui.dashboard;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +16,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.retouser.R;
 import com.example.retouser.databinding.FragmentDashboardBinding;
 import com.example.retouser.model.Persona;
+import com.example.retouser.viewholder.personaAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,48 +37,62 @@ import java.util.List;
 
 public class DashboardFragment extends Fragment {
 
-    private List<Persona> listPerson = new ArrayList<Persona>();
-    ArrayAdapter<Persona> arrayAdapterPersona;
-    ListView listV_personas;
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
+    private RecyclerView recyclerView;
+    private personaAdapter personaAdapter;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        listV_personas = view.findViewById(R.id.lv_datosPersonas);
-        inicializarFirebase();
+        recyclerView = view.findViewById(R.id.recviewpersona);
+        recyclerView.setLayoutManager(new CustomLinearLayoutManager(getActivity()));
+
         listarDatos();
         return  view;
 
     }
 
-    private void inicializarFirebase() {
-        FirebaseApp.initializeApp(getContext());
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
+    private void listarDatos() {
+        FirebaseRecyclerOptions<Persona> options =
+                new FirebaseRecyclerOptions.Builder<Persona>()
+                        .setQuery(FirebaseDatabase.getInstance().getReference().child("Persona"), Persona.class)
+                        .build();
+
+        Log.d("Options"," data : "+options);
+
+        personaAdapter = new personaAdapter(options);
+        recyclerView.setAdapter(personaAdapter);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        personaAdapter.startListening();
     }
 
-    private void listarDatos() {
-        databaseReference.child("Persona").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listPerson.clear();
+    @Override
+    public void onStop() {
+        super.onStop();
+        personaAdapter.stopListening();
+    }
 
-                for (DataSnapshot objSnaptshot : dataSnapshot.getChildren()){
-                    Persona p = objSnaptshot.getValue(Persona.class);
-                    listPerson.add(p);
+    public class CustomLinearLayoutManager extends LinearLayoutManager {
+        public CustomLinearLayoutManager(Context context) {
+            super(context);
+        }
 
-                    arrayAdapterPersona = new ArrayAdapter<Persona>(getContext(), android.R.layout.simple_list_item_1, listPerson);
-                    listV_personas.setAdapter(arrayAdapterPersona);
-                }
-            }
+        public CustomLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
+            super(context, orientation, reverseLayout);
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+        public CustomLinearLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+        }
 
-            }
+        //Generate constructors
 
-        });
+        @Override
+        public boolean supportsPredictiveItemAnimations() {
+            return false;
+        }
     }
 }

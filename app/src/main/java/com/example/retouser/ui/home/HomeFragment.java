@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment {
         agregar = view.findViewById(R.id.button);
         validacion= view.findViewById(R.id.validacion);
 
-        initData();
+        initDataSpinnerGenero();
         inicializarFirebase();
 
         agregar.setOnClickListener(new View.OnClickListener() {
@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private void initData() {
+    private void initDataSpinnerGenero() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.lista, android.R.layout.simple_list_item_1);
         spinner.setAdapter(adapter);
     }
@@ -75,27 +75,47 @@ public class HomeFragment extends Fragment {
         String nombre = name.getText().toString();
         String descr = descripcion.getText().toString();
         String url = imagenurl.getText().toString();
-
-
         String textgenero = spinner.getSelectedItem().toString();
 
-        Persona p = new Persona();
-        p.setUid(UUID.randomUUID().toString());
-        p.setName(nombre);
-        p.setDescripcion(descr);
-        p.setGenero(textgenero);
-        p.setImagenURL(url);
-        databaseReference.child("Persona").child(p.getUid()).setValue(p);
-        Toast.makeText(getActivity(), "Agregado", Toast.LENGTH_LONG).show();
-        limpiarCajas();
+        Toast.makeText(getActivity(),"Agregar", Toast.LENGTH_LONG).show();
+        if (nombre.equals("")||descr.equals("")||url.equals("")||textgenero.equals("")){
+            validacion();
+        }
+        else {
+            Persona p = new Persona();
+            p.setUid(UUID.randomUUID().toString());
+            p.setName(nombre);
+            p.setDescripcion(descr);
+            p.setGenero(textgenero);
+            p.setImagenURL(url);
+            //se guarda la información de FIrebase con nombre de la tabla Persona
+            databaseReference.child("Persona").child(p.getUid()).setValue(p);
+            Toast.makeText(getActivity(), "Agregado", Toast.LENGTH_LONG).show();
+            limpiarCajas();
+        }
 
     }
     private void limpiarCajas() {
         name.setText("");
         descripcion.setText("");
         imagenurl.setText("");
-        //appP.setText("");
+        validacion.setText("");
     }
 
+    private void validacion() {
+        String nombre = name.getText().toString();
+        String imagen = imagenurl.getText().toString();
+        String descr = descripcion.getText().toString();
+
+        if (nombre.equals("")){
+            validacion.setText("Ingrese el nombre");
+        }
+        else if (descr.equals("")){
+            validacion.setText("Ingrese la descripción");
+        }
+        else if (imagen.equals("")){
+            validacion.setText("Ingrese la URL de la imagen");
+        }
+    }
 
 }
